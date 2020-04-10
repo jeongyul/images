@@ -1,0 +1,57 @@
+int[] apply_mask(pixel_t[] pixels, int width, int height, int[] mask, int maskwidth)
+//@requires (is_valid_imagesize(width, height));
+//@requires (\length(pixels) == width * height);
+//@requires (\length(mask) == maskwidth * maskwidth);
+//@ensures (\result != pixels);
+//@ensures (\length(\result) == width * height);
+{
+    //origin index
+    int origin = maskwidth * maskwidth / 2;
+    int orgRow = get_row(origin, maskwidth, maskwidth);
+    int orgCol = get_column(origin, maskwidth, maskwidth);
+
+    //result pixel list
+    int[] result = alloc_array(int, width * height);
+
+    //looping through the original image
+    for (int pInd = 0; pInd < width * height; pInd++)
+    //@loop_invariant (0 <= pInd && pInd <= width * height);
+    {
+        //pixel list row & colume & initiate pixel average value
+        int pRow = get_row(pInd, width, height);
+        int pCol = get_column(pInd, width, height);
+        int valSum = 0;
+
+        //looping thorugh the mask
+        for (int mDiff = -origin; mDiff <= origin; mDiff++)
+        //@loop_invariant (-origin <= mDiff && mDiff <= origin + 1);
+        {
+            //the index of current mask point on the mask
+            int mInd = mDiff + origin;
+            int mRow = get_row(mInd, maskwidth, maskwidth);
+            int mCol = get_column(mInd, maskwidth, maskwidth);
+
+            //the mask point row & colum & index on the pixel
+            int pntR = pRow + (mRow - orgRow);
+            int pntC = pCol + (mCol - orgCol);
+
+            if (is_valid_pixel(pntR, pntC, width, height))
+            {
+
+                //pixel piint index
+                int pntInd = get_index(pntR, pntC, width, height);
+
+                //pixel RGB values & calculate the avg val
+                int pntRd = get_red(pixels[pntInd]);
+                int pntG = get_green(pixels[pntInd]);
+                int pntB = get_blue(pixels[pntInd]);
+                int pointAvg = (pntRd + pntG + pntB) / 3;
+
+                valSum += mask[mInd] * pointAvg;
+            }
+        }
+        result[pInd] = valSum;
+    }
+    return result;
+}
+

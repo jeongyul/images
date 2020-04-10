@@ -1,0 +1,79 @@
+//Takes an image as input and return the duplicated and rotated image
+//PRECONDITION: the input image should have valid image size
+//PRECONDITION: the input image should have the same width and height
+//PostCONDITION: the result should have the image size of (w+h)*(w+h)
+//POSTCONDITION: ????? valid image size? not same to the original image?
+pixel_t[] rotate(pixel_t[] pixels, int width, int height)
+//@requires (is_valid_imagesize(width, height));
+//@requires (width == height);
+//@requires (\length(pixels) == width * height);
+//@requires (is_valid_imagesize(width * height, width * height));
+//@ensures (\result != pixels);
+//@ensures (\length(\result) == (width + height) * (width + height));
+{
+    pixel_t[] result = alloc_array(pixel_t, (width + height) * (width + height));
+    int newW = width * 2;
+    int newH = height * 2;
+
+    //first andrew (0 <= col1 < width, 0 <= row1 < height)
+    for (int col1 = 0; col1 < width; col1++)
+    //@loop_invariant (0 <= col1 && col1 <= width);
+    {
+        for (int row1 = 0; row1 < height; row1++)
+        //@loop_invariant (0 <= row1 && row1 <= height);
+        {
+            int newInd1 = get_index(row1, col1, newW, newH);
+            int oldRow1 = col1;
+            int oldCol1 = (width - 1) - row1;
+            int oldInd1 = get_index(oldRow1, oldCol1, width, height);
+            result[newInd1] =  pixels[oldInd1];
+        }
+    }
+
+    //second andrew (width <= col2 < width*2, 0 <= row2 < height)
+    for (int col2 = width; col2 < width * 2; col2++)
+    //@loop_invariant (0 <= col2 && col2 <= width * 2);
+    {
+        for (int row2 = 0; row2 < height; row2 ++)
+        //@loop_invariant (0 <= row2 && row2 <= height);
+
+        {
+            int newInd2 = get_index(row2, col2, newW, newH);
+            int oldRow2 = row2;
+            int oldCol2 = col2 - width;
+            int oldInd2 = get_index(oldRow2, oldCol2, width, height);
+            result[newInd2] = pixels[oldInd2];
+        }
+    }
+
+    //third andrew (0 <= col3 < width, height <= row3 < height*2)
+    for (int col3 = 0; col3 < width; col3++)
+    //@loop_invariant (0 <= col3 && col3 <= width);
+    {
+        for (int row3 = height; row3 < height * 2; row3++)
+        //@loop_invariant (height <= row3 && row3 <= height * 2);
+        {
+            int newInd3 = get_index(row3, col3, newW, newH);
+            int oldRow3 = (height * 2 - 1) - row3;
+            int oldCol3 = (width - 1) - col3;
+            int oldInd3 = get_index(oldRow3, oldCol3, width, height);
+            result[newInd3] = pixels[oldInd3];
+        }
+    }
+
+    //fourth andrew (width <= col4 < width*2, height <= row4 < height*2)
+    for (int col4 = width; col4 < width * 2; col4++)
+    //@loop_invariant (width <= col4 && col4 <= width * 2);
+    {
+        for (int row4 = height; row4 < height * 2; row4++)
+        //@loop_invariant (height <= row4 && row4 <= height * 2);
+        {
+            int newInd4 = get_index(row4, col4, newW, newH);
+            int oldRow4 = (width * 2 - 1) - col4;
+            int oldCol4 = row4 - height;
+            int oldInd4 = get_index(oldRow4, oldCol4, width, height);
+            result[newInd4] = pixels[oldInd4];
+        }
+    }
+    return result;
+}
